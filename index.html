@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RZ Enterprise - asis 2026.1.2</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5607/5607340.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --bg: #fdfdfd; --card: #ffffff; --text: #2d3436; --border: #dfe6e9; --primary: #636e72; --accent: #2d3436; --nav-bg: #ffffff; --shadow: rgba(0,0,0,0.05);
+        }
+        [data-theme="dark"] {
+            --bg: #000000; --card: #121212; --text: #ffff00; --border: #ffff00; --primary: #ffff00; --accent: #ffff00; --nav-bg: #0a0a0a; --shadow: transparent;
+        }
+
+        * { font-family: 'Tajawal', sans-serif; box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; transition: 0.3s; overflow-x: hidden; }
+
+        /* شاشة القفل */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 10001; display: none; align-items: center; justify-content: center; }
+
+        .header { display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; padding: 20px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+
+        .container { max-width: 600px; margin: auto; padding: 15px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 15px; box-shadow: 0 4px 15px var(--shadow); }
+        h3 { margin-top: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+
+        .input-group { margin-bottom: 15px; }
+        label { font-size: 0.8rem; font-weight: bold; opacity: 0.8; margin-bottom: 5px; display: block; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 16px; transition: 0.2s; }
+        
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .btn { border: none; border-radius: 12px; font-weight: 700; padding: 16px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn-main { background: var(--accent); color: var(--bg); }
+        [data-theme="dark"] .btn-main { color: #000; }
+        .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 10px; }
+        .btn-danger { background: #ff475715; color: #ff4757; border: 1px solid #ff475750; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { text-align: center; color: var(--text); opacity: 0.4; font-size: 10px; flex: 1; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--accent); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        .invoice-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
+        .btn-del { color: #ff4757; font-size: 1.3rem; cursor: pointer; align-self: end; padding-bottom: 10px; }
+        .theme-btn { background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+
+        .logo-preview { width: 60px; height: 60px; border-radius: 8px; border: 1px solid var(--border); object-fit: contain; background: #eee; }
+        .edit-badge { background: #ff9f43; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 10px; display: none; margin-right: 10px; }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div id="login-overlay">
+        <div class="container" style="text-align: center;">
+            <div class="logo" style="font-size: 2.5rem; margin-bottom: 30px;">RZ</div>
+            <div class="card">
+                <h3>دخول المنظومة</h3>
+                <input type="password" id="login-pass" placeholder="كلمة المرور" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px;">
+                <button onclick="checkPassword()" class="btn btn-main" style="margin-top: 20px;">دخول</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="logo">RZ <span style="font-weight: 300;">ENTERPRISE</span></div>
+        <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+    </div>
+
+    <div id="screen-add" class="container">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:0.8rem; opacity:0.7;">
+                <span>سيريال: <b id="sn-display">--</b> <span id="edit-indicator" class="edit-badge">وضع التعديل</span></span>
+                <span id="date-display">--</span>
+            </div>
+            <div class="input-group"><label>المندوب المسئول</label><input type="text" id="delegate"></div>
+            <div class="input-group"><label>اسم الشركة</label><input type="text" id="company"></div>
+            <div class="input-group"><label>رقم المخزن</label><input type="text" id="store-id"></div>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-list"></i> تفاصيل الفواتير</h3>
+            <div id="items-container"></div>
+            <button onclick="addNewRow()" class="btn btn-outline" style="font-size: 0.9rem;"><i class="fas fa-plus"></i> إضافة سطر جديد</button>
+        </div>
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <b>الإجمالي الكلي</b><span id="total-price" style="font-size:1.5rem; font-weight: 900;">0</span>
+            </div>
+            <button id="save-btn" onclick="saveAndPreview()" class="btn btn-main"><i class="fas fa-eye"></i> حفظ ومعاينة الإذن</button>
+            <button id="cancel-edit-btn" onclick="resetApp()" class="btn btn-outline" style="display:none; color:#ff4757; border-color:#ff475750;">إلغاء التعديل</button>
+        </div>
+    </div>
+
+    <div id="screen-history" class="container" style="display:none;">
+        <div class="card" style="padding:10px;">
+            <input type="text" id="search-input" oninput="filterHistory()" placeholder="بحث برقم السيريال أو المندوب...">
+        </div>
+        <div id="history-list"></div>
+    </div>
+
+    <div id="screen-settings" class="container" style="display:none;">
+        <div class="card">
+            <h3>شعار الشركة (اللوجو)</h3>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img id="logo-preview" class="logo-preview" src="" alt="">
+                <div style="flex:1">
+                    <input type="file" id="logo-input" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+                    <button onclick="document.getElementById('logo-input').click()" class="btn btn-outline" style="padding: 10px; font-size: 0.8rem;">رفع صورة</button>
+                </div>
+                <button onclick="removeLogo()" class="btn btn-danger" style="width: 40px; padding: 10px;"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>قفل التطبيق (باسورد)</h3>
+                <label class="switch">
+                    <input type="checkbox" id="lock-toggle" onchange="toggleLockFeature()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div id="lock-settings-area" style="display: none; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <input type="password" id="new-app-pass" placeholder="رمز الدخول الجديد">
+                <button onclick="updatePassword()" class="btn btn-outline" style="margin-top: 10px; font-size: 0.8rem;">حفظ الرمز</button>
+            </div>
+        </div>
+        <div class="card">
+            <h3>النسخ الاحتياطي</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="exportFullBackup()" class="btn btn-outline" style="font-size: 0.8rem;"><i class="fas fa-download"></i> تصدير البيانات</button>
+                <button onclick="document.getElementById('import-input').click()" class="btn btn-outline" style="font-size: 0.8rem;"><i class="fas fa-upload"></i> استيراد ملف</button>
+                <input type="file" id="import-input" accept=".json" style="display: none;" onchange="importFullBackup(event)">
+            </div>
+        </div>
+        <div class="card">
+            <h3>البيانات الافتراضية</h3>
+            <div class="input-group"><label>المندوب الافتراضي</label><input type="text" id="def-delegate" onchange="saveDefaults()"></div>
+            <div class="input-group"><label>الشركة الافتراضية</label><input type="text" id="def-company" onchange="saveDefaults()"></div>
+            <div class="input-group"><label>رقم المخزن الافتراضي</label><input type="text" id="def-store" onchange="saveDefaults()"></div>
+            <button onclick="clearAllHistory()" class="btn btn-danger">مسح الأرشيف نهائياً</button>
+        </div>
+        <p style="text-align: center; opacity: 0.5; font-size: 0.7rem;">الإصدار: asis 2026.1.2</p>
+    </div>
+
+    <div id="screen-dev" class="container" style="display:none;">
+        <div class="card">
+            <h3>المطور: زياد يحيى زكريا</h3>
+            <div style="line-height: 2;">
+                <div><i class="fab fa-whatsapp"></i> +201124148723</div>
+                <div><i class="fas fa-envelope"></i> zidplgoog@gmail.com</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-add" onclick="showTab('screen-add', this)"><i class="fas fa-plus-square"></i>جديد</div>
+        <div class="nav-item" onclick="showTab('screen-history', this)"><i class="fas fa-folder-open"></i>الأرشيف</div>
+        <div class="nav-item" onclick="showTab('screen-settings', this)"><i class="fas fa-cog"></i>الإعدادات</div>
+        <div class="nav-item" onclick="showTab('screen-dev', this)"><i class="fas fa-code"></i>المطور</div>
+    </nav>
+
+    <script>
+        let isLockEnabled = localStorage.getItem('RZ_LOCK_ENABLED') === 'true';
+        let correctPass = localStorage.getItem('RZ_APP_PASS') || '1234';
+        let companyLogo = localStorage.getItem('RZ_LOGO') || '';
+        let editingId = null;
+
+        // --- الدوال الأساسية (بدون تعديل) ---
+        function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                companyLogo = ev.target.result;
+                localStorage.setItem('RZ_LOGO', companyLogo);
+                document.getElementById('logo-preview').src = companyLogo;
+            };
+            reader.readAsDataURL(file);
+        }
+        function removeLogo() { companyLogo = ''; localStorage.removeItem('RZ_LOGO'); document.getElementById('logo-preview').src = ''; }
+        function checkLock() { if(isLockEnabled) document.getElementById('login-overlay').style.display='flex'; }
+        function checkPassword() { if(document.getElementById('login-pass').value === correctPass) document.getElementById('login-overlay').style.display='none'; else alert('خطأ!'); }
+        function toggleLockFeature() { isLockEnabled = document.getElementById('lock-toggle').checked; localStorage.setItem('RZ_LOCK_ENABLED', isLockEnabled); document.getElementById('lock-settings-area').style.display = isLockEnabled ? 'block' : 'none'; }
+        function updatePassword() { const p = document.getElementById('new-app-pass').value; if(p.length >= 4) { localStorage.setItem('RZ_APP_PASS', p); correctPass = p; alert("تم الحفظ"); } }
+        function toggleTheme() { const b = document.body; b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+        function showTab(id, el) { document.querySelectorAll('.container').forEach(c => c.style.display='none'); document.getElementById(id).style.display='block'; document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); if(id==='screen-history') renderHistory(); }
+
+        // --- نظام الفواتير المحدث ---
+        let currentSN = '';
+        window.onload = () => {
+            document.getElementById('lock-toggle').checked = isLockEnabled;
+            if(isLockEnabled) document.getElementById('lock-settings-area').style.display='block';
+            if(companyLogo) document.getElementById('logo-preview').src = companyLogo;
+            checkLock(); loadDefaults(); resetApp();
+        };
+
+        function resetApp() {
+            editingId = null;
+            currentSN = 'RZ-' + Date.now().toString().slice(-6);
+            document.getElementById('sn-display').innerText = currentSN;
+            document.getElementById('date-display').innerText = new Date().toLocaleDateString('ar-EG');
+            document.getElementById('edit-indicator').style.display = 'none';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            document.getElementById('save-btn').innerHTML = '<i class="fas fa-eye"></i> حفظ ومعاينة الإذن';
+            document.getElementById('items-container').innerHTML = '';
+            addNewRow(); updateTotal(); loadDefaults();
+        }
+
+        function addNewRow(v='', n='', c='') {
+            const div = document.createElement('div');
+            div.className = 'invoice-row';
+            div.innerHTML = `<div class="input-group"><label>المبلغ</label><input type="number" class="val-in" value="${v}" oninput="updateTotal()"></div><div class="input-group"><label>الفاتورة</label><input type="text" class="num-in" value="${n}"></div><div class="input-group"><label>العميل</label><input type="text" class="cust-in" value="${c}"></div><i class="fas fa-trash btn-del" onclick="this.parentElement.remove();updateTotal()"></i>`;
+            document.getElementById('items-container').appendChild(div);
+        }
+
+        function updateTotal() { let t = 0; document.querySelectorAll('.val-in').forEach(i => t += Number(i.value)); document.getElementById('total-price').innerText = t.toLocaleString() + ' ج.م'; }
+
+        function saveAndPreview() {
+            const data = {
+                id: editingId || Date.now(),
+                sn: currentSN,
+                delegate: document.getElementById('delegate').value || "غير محدد",
+                company: document.getElementById('company').value || "غير محدد",
+                store: document.getElementById('store-id').value || "--",
+                date: document.getElementById('date-display').innerText,
+                total: document.getElementById('total-price').innerText,
+                items: Array.from(document.querySelectorAll('.invoice-row')).map(r => ({
+                    v: r.querySelector('.val-in').value || 0,
+                    n: r.querySelector('.num-in').value || "-",
+                    c: r.querySelector('.cust-in').value || "-"
+                }))
+            };
+            let db = JSON.parse(localStorage.getItem('RZ_DB') || '[]');
+            if(editingId) db = db.map(item => item.id === editingId ? data : item);
+            else db.unshift(data);
+            localStorage.setItem('RZ_DB', JSON.stringify(db));
+            openPreviewWindow(data);
+            resetApp();
+        }
+
+        function openPreviewWindow(data) {
+            const win = window.open('', '_blank', 'width=800,height=900');
+            let rows = '';
+            data.items.forEach(i => rows += `<tr><td>${i.v} ج.م</td><td>${i.n}</td><td>${i.c}</td></tr>`);
+            const logoHtml = companyLogo ? `<img src="${companyLogo}" style="max-height:80px;">` : `<h2 style="margin:0;">RZ ENTERPRISE</h2>`;
+
+            win.document.write(`
+                <html dir="rtl"><head><title>إذن استلام - ${data.sn}</title>
+                <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    body { font-family: 'Tajawal', sans-serif; padding: 20px; background: #fff; color: #333; }
+                    .no-print { display: flex; gap: 10px; margin-bottom: 15px; }
+                    .btn-p { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+                    .btn-blue { background: #2d3436; color: #fff; }
+                    .invoice { border: 1px solid #eee; padding: 20px; border-radius: 10px; max-width: 800px; margin: auto; }
+                    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+                    /* تصغير الجزء المطلوب في السؤال */
+                    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+                    .box { background: #f9f9f9; padding: 8px 12px; border-radius: 6px; border: 1px solid #f0f0f0; }
+                    .box label { font-size: 10px; color: #888; display: block; margin-bottom: 2px; }
+                    .box b { font-size: 13px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th { background: #f4f4f4; padding: 10px; font-size: 13px; border: 1px solid #eee; }
+                    td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 13px; }
+                    .footer-total { background: #000; color: #fff; padding: 15px; display: flex; justify-content: space-between; margin-top: 15px; border-radius: 5px; font-size: 16px; }
+                    @media print { .no-print { display: none; } .invoice { border:none; padding:0; } }
+                </style></head>
+                <body>
+                    <div class="no-print"><button class="btn-p btn-blue" onclick="window.print()">طباعة</button></div>
+                    <div class="invoice">
+                        <div class="header"><div>${logoHtml}</div><div><h3 style="margin:0">إذن استلام فواتير</h3></div></div>
+                        <div class="grid">
+                            <div class="box"><label>السيريال</label><b>${data.sn}</b></div>
+                            <div class="box"><label>المندوب</label><b>${data.delegate}</b></div>
+                            <div class="box"><label>الشركة</label><b>${data.company}</b></div>
+                            <div class="box"><label>رقم المخزن</label><b>${data.store}</b></div>
+                            <div class="box"><label>التاريخ</label><b>${data.date}</b></div>
+                        </div>
+                        <table><thead><tr><th>المبلغ</th><th>رقم الفاتورة</th><th>العميل</th></tr></thead><tbody>${rows}</tbody></table>
+                        <div class="footer-total"><span>الإجمالي:</span><span>${data.total}</span></div>
+                    </div>
+                </body></html>
+            `);
+            win.document.close();
+        }
+
+        function renderHistory(f=null) {
+            const l = document.getElementById('history-list');
+            const d = f || JSON.parse(localStorage.getItem('RZ_DB') || '[]');
+            l.innerHTML = d.map((item) => `
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>${item.sn}</b><br><small>${item.delegate} - ${item.date}</small></div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="editOrderById(${item.id})" class="btn btn-outline" style="width:35px; padding:5px; color:#ff9f43; border-color:#ff9f4350;"><i class="fas fa-edit"></i></button>
+                        <button onclick="reViewByDataId(${item.id})" class="btn btn-outline" style="width:35px; padding:5px"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>`).join('') || '<p style="text-align:center; opacity:0.5">الأرشيف فارغ</p>';
+        }
+
+        function editOrderById(id) {
+            const db = JSON.parse(localStorage.getItem('RZ_DB') || '[]');
+            const item = db.find(x => x.id === id);
+            if(!item) return;
+            editingId = item.id;
+            currentSN = item.sn;
+            document.getElementById('sn-display').innerText = item.sn;
+            document.getElementById('delegate').value = item.delegate;
+            document.getElementById('company').value = item.company;
+            document.getElementById('store-id').value = item.store;
+            document.getElementById('edit-indicator').style.display = 'inline-block';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+            document.getElementById('save-btn').innerHTML = '<i class="fas fa-check-circle"></i> تحديث البيانات';
+            document.getElementById('items-container').innerHTML = '';
+            item.items.forEach(it => addNewRow(it.v, it.n, it.c));
+            updateTotal();
+            showTab('screen-add', document.getElementById('nav-add'));
+        }
+
+        function reViewByDataId(id) {
+            const h = JSON.parse(localStorage.getItem('RZ_DB') || '[]');
+            const item = h.find(x => x.id === id);
+            if(item) openPreviewWindow(item);
+        }
+
+        function filterHistory() { const q = document.getElementById('search-input').value.toLowerCase(); const db = JSON.parse(localStorage.getItem('RZ_DB') || '[]'); renderHistory(db.filter(i => i.sn.toLowerCase().includes(q) || i.delegate.toLowerCase().includes(q))); }
+        function exportFullBackup() {
+            const data = { db: localStorage.getItem('RZ_DB'), def: localStorage.getItem('RZ_DEFAULTS'), logo: localStorage.getItem('RZ_LOGO'), lock: localStorage.getItem('RZ_LOCK_ENABLED'), pass: localStorage.getItem('RZ_APP_PASS') };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `RZ_FULL_BACKUP.json`; a.click();
+        }
+        function importFullBackup(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const d = JSON.parse(ev.target.result);
+                if(d.db) localStorage.setItem('RZ_DB', d.db);
+                if(d.def) localStorage.setItem('RZ_DEFAULTS', d.def);
+                if(d.logo) localStorage.setItem('RZ_LOGO', d.logo);
+                if(d.lock) localStorage.setItem('RZ_LOCK_ENABLED', d.lock);
+                if(d.pass) localStorage.setItem('RZ_APP_PASS', d.pass);
+                alert("تمت الاستعادة!"); location.reload();
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+        function saveDefaults() { localStorage.setItem('RZ_DEFAULTS', JSON.stringify({ d: document.getElementById('def-delegate').value, c: document.getElementById('def-company').value, s: document.getElementById('def-store').value })); }
+        function loadDefaults() { 
+            const d = JSON.parse(localStorage.getItem('RZ_DEFAULTS') || '{}');
+            document.getElementById('def-delegate').value = d.d || ''; document.getElementById('def-company').value = d.c || ''; document.getElementById('def-store').value = d.s || '';
+            if(!editingId) { document.getElementById('delegate').value = d.d || ''; document.getElementById('company').value = d.c || ''; document.getElementById('store-id').value = d.s || ''; }
+        }
+        function clearAllHistory() { if(confirm("حذف كل الأرشيف؟")) { localStorage.setItem('RZ_DB', '[]'); renderHistory(); } }
+    </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RZ-ENTERPRISE | الوصف الرسمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #ffff00; /* الأصفر المميز */
+            --bg-dark: #050505;
+            --card-bg: #111111;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #1a1a00 0%, #050505 100%);
+            position: relative;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(transparent, var(--bg-dark));
+        }
+
+        .badge {
+            background: var(--primary-color);
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin: 0;
+            font-weight: 900;
+            color: var(--primary-color);
+            text-shadow: 0 10px 20px rgba(255, 255, 0, 0.2);
+        }
+
+        .hero-section p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--text-gray);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        /* Features Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #222;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(255, 255, 0, 0.05);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 { font-size: 1.4rem; margin-bottom: 15px; }
+        .feature-card p { color: var(--text-gray); font-size: 0.95rem; }
+
+        /* Stack & Notes Section */
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .info-box {
+            background: #0c0c0c;
+            padding: 35px;
+            border-radius: 24px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .info-box h3 { margin-top: 0; color: var(--primary-color); }
+        .info-box ul { list-style: none; padding: 0; }
+        .info-box ul li { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .info-box ul li i { color: var(--primary-color); font-size: 0.8rem; }
+
+        /* Version & CTA */
+        .cta-footer {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(to top, #1a1a00, transparent);
+        }
+
+        .btn-main {
+            background: var(--primary-color);
+            color: #000;
+            padding: 18px 40px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: var(--transition);
+        }
+
+        .btn-main:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .info-section { grid-template-columns: 1fr; }
+            h1 { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero-section">
+        <div class="badge">asis 2026.1.2 • stable</div>
+        <h1>RZ-ENTERPRISE</h1>
+        <p>الحل الذكي والحل التقني المتكامل لإدارة تحصيل فواتير المناديب ميدانياً بدقة واحترافية متناهية.</p>
+        <div style="margin-top: 40px;">
+            <a href="#features" class="btn-main"><i class="fas fa-rocket"></i> استكشاف النظام</a>
+        </div>
+    </section>
+
+    <div class="container" id="features">
+        <div class="section-title">
+            <h2>المميزات الرئيسية</h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-boxes"></i>
+                <h3>إدارة الفواتير</h3>
+                <p>تسجيل مجمع وسريع للفواتير مع تفاصيل العميل والمبالغ بدقة متناهية لكل سطر.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-magic"></i>
+                <h3>تعديل ذكي</h3>
+                <p>إمكانية الرجوع للأرشيف وتعديل البيانات مع الحفاظ الكامل على تسلسل السيريال والأمان.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-print"></i>
+                <h3>طباعة احترافية</h3>
+                <p>إصدار أذونات استلام فورية بصيغة PDF بتنسيق عصري يتضمن شعار مؤسستك.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-user-lock"></i>
+                <h3>أمان متقدم</h3>
+                <p>نظام قفل مدمج بكلمة مرور لحماية البيانات المالية الحساسة من المتطفلين.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cloud-download-alt"></i>
+                <h3>نسخ احتياطي</h3>
+                <p>تصدير واستيراد قاعدة البيانات (JSON) لضمان عدم ضياع بياناتك تحت أي ظرف.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>دعم PWA</h3>
+                <p>تثبيت فوري على Android و iOS ليعمل كأنه تطبيق أصلي وبسرعة البرق.</p>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-box">
+                <h3><i class="fas fa-tools"></i> الترسانة التقنية</h3>
+                <ul>
+                    <li><i class="fas fa-code"></i> Frontend: HTML5, CSS3, ES6+ JavaScript</li>
+                    <li><i class="fas fa-icons"></i> Icons: FontAwesome 6.4.0</li>
+                    <li><i class="fas fa-font"></i> Fonts: Google Tajawal</li>
+                    <li><i class="fas fa-hdd"></i> Storage: LocalStorage (إدارة البيانات بدون إنترنت)</li>
+                </ul>
+            </div>
+            <div class="info-box" style="border-right-color: #fff;">
+                <h3><i class="fas fa-terminal"></i> ملاحظات الإصدار الأخير</h3>
+                <ul style="opacity: 0.8;">
+                    <li>✓ إضافة ميزة "تعديل الفاتورة" من الأرشيف.</li>
+                    <li>✓ تحسين مقاسات صناديق المعاينة والطباعة.</li>
+                    <li>✓ استقرار كلي لنظام النسخ الاحتياطي والترميم.</li>
+                    <li>✓ تحسين استهلاك البطارية والذاكرة.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section class="cta-footer">
+        <h2>جاهز لرفع كفاءة أعمالك؟</h2>
+        <p style="color: var(--text-gray); margin-bottom: 30px;">ابدأ الآن مع RZ-ENTERPRISE واستمتع بالدقة والسرعة.</p>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <div style="font-size: 0.9rem; color: var(--text-gray);">
+                تطوير: <b>زياد يحيى زكريا</b> | <i class="fab fa-whatsapp"></i> +201124148723
+            </div>
+            <a href="mailto:zidplgoog@gmail.com" class="btn-main" style="background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color);">تواصل عبر الإيميل</a>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; border-top: 1px solid #111; font-size: 0.8rem; color: #444;">
+        <p>تم الإصدار تحت رخصة MIT • حقوق المطور محفوظة &copy; 2026</p>
+    </footer>
+
+</body>
+</html>

@@ -39,6 +39,7 @@
         .input-group { margin-bottom: 15px; }
         label { font-size: 0.8rem; font-weight: bold; opacity: 0.8; margin-bottom: 5px; display: block; }
         input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 16px; transition: 0.2s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
         
         .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -48,18 +49,20 @@
         input:checked + .slider:before { transform: translateX(22px); }
 
         .btn { border: none; border-radius: 12px; font-weight: 700; padding: 16px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .btn-main { background: var(--accent); color: var(--bg); }
         [data-theme="dark"] .btn-main { color: #000; }
         .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 10px; }
         .btn-danger { background: #ff475715; color: #ff4757; border: 1px solid #ff475750; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { text-align: center; color: var(--text); opacity: 0.4; font-size: 10px; flex: 1; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--accent); }
+        .nav-item { text-align: center; color: var(--text); opacity: 0.4; font-size: 10px; flex: 1; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { opacity: 1; color: var(--accent); font-weight: bold; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        .invoice-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
-        .btn-del { color: #ff4757; font-size: 1.3rem; cursor: pointer; align-self: end; padding-bottom: 10px; }
+        .invoice-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); animation: fadeIn 0.3s ease; }
+        .btn-del { color: #ff4757; font-size: 1.3rem; cursor: pointer; align-self: end; padding-bottom: 10px; transition: 0.2s; }
+        .btn-del:hover { transform: scale(1.1); }
         .theme-btn { background: none; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 
         .logo-preview { width: 60px; height: 60px; border-radius: 8px; border: 1px solid var(--border); object-fit: contain; background: #eee; }
@@ -67,7 +70,6 @@
         
         .dev-logo { width: 100px; height: 100px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px var(--shadow); object-fit: cover; }
 
-        /* ستايل نافذة المعاينة الجديدة للموبايل */
         #print-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #fff; z-index: 20000; display: none; overflow-y: auto; padding: 20px; color: #333;
@@ -88,8 +90,7 @@
             </button>
             <button onclick="closePrintOverlay()" style="flex:1; padding:15px; background:#eee; color:#333; border:none; border-radius:10px; cursor:pointer;">إغلاق</button>
         </div>
-        <div id="print-content">
-            </div>
+        <div id="print-content"></div>
     </div>
 
     <div id="login-overlay">
@@ -235,10 +236,10 @@
         }
         function removeLogo() { companyLogo = ''; localStorage.removeItem('RZ_LOGO'); document.getElementById('logo-preview').src = ''; }
         function checkLock() { if(isLockEnabled) document.getElementById('login-overlay').style.display='flex'; }
-        function checkPassword() { if(document.getElementById('login-pass').value === correctPass) document.getElementById('login-overlay').style.display='none'; else alert('خطأ!'); }
+        function checkPassword() { if(document.getElementById('login-pass').value === correctPass) document.getElementById('login-overlay').style.display='none'; else alert('كلمة المرور غير صحيحة!'); }
         function toggleLockFeature() { isLockEnabled = document.getElementById('lock-toggle').checked; localStorage.setItem('RZ_LOCK_ENABLED', isLockEnabled); document.getElementById('lock-settings-area').style.display = isLockEnabled ? 'block' : 'none'; }
-        function updatePassword() { const p = document.getElementById('new-app-pass').value; if(p.length >= 4) { localStorage.setItem('RZ_APP_PASS', p); correctPass = p; alert("تم الحفظ"); } }
-        function toggleTheme() { const b = document.body; b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+        function updatePassword() { const p = document.getElementById('new-app-pass').value; if(p.length >= 4) { localStorage.setItem('RZ_APP_PASS', p); correctPass = p; alert("تم حفظ كلمة المرور بنجاح"); } else { alert("يجب أن تكون كلمة المرور 4 أرقام على الأقل"); } }
+        function toggleTheme() { const b = document.body; const current = b.getAttribute('data-theme'); b.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark'); }
         function showTab(id, el) { document.querySelectorAll('.container').forEach(c => c.style.display='none'); document.getElementById(id).style.display='block'; document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); if(id==='screen-history') renderHistory(); }
 
         let currentSN = '';
@@ -264,13 +265,41 @@
         function addNewRow(v='', n='', c='') {
             const div = document.createElement('div');
             div.className = 'invoice-row';
-            div.innerHTML = `<div class="input-group"><label>المبلغ</label><input type="number" class="val-in" value="${v}" oninput="updateTotal()"></div><div class="input-group"><label>الفاتورة</label><input type="text" class="num-in" value="${n}"></div><div class="input-group"><label>العميل</label><input type="text" class="cust-in" value="${c}"></div><i class="fas fa-trash btn-del" onclick="this.parentElement.remove();updateTotal()"></i>`;
+            div.innerHTML = `
+                <div class="input-group"><label>المبلغ</label><input type="number" class="val-in" value="${v}" oninput="updateTotal()"></div>
+                <div class="input-group"><label>الفاتورة</label><input type="text" class="num-in" value="${n}"></div>
+                <div class="input-group"><label>العميل</label><input type="text" class="cust-in" value="${c}"></div>
+                <i class="fas fa-trash btn-del" onclick="removeRow(this)"></i>`;
             document.getElementById('items-container').appendChild(div);
         }
 
-        function updateTotal() { let t = 0; document.querySelectorAll('.val-in').forEach(i => t += Number(i.value)); document.getElementById('total-price').innerText = t.toLocaleString() + ' ج.م'; }
+        function removeRow(btn) {
+            if(document.querySelectorAll('.invoice-row').length > 1) {
+                btn.parentElement.remove();
+                updateTotal();
+            } else {
+                alert("يجب وجود سطر واحد على الأقل");
+            }
+        }
+
+        function updateTotal() { 
+            let t = 0; 
+            document.querySelectorAll('.val-in').forEach(i => t += Number(i.value)); 
+            document.getElementById('total-price').innerText = t.toLocaleString() + ' ج.م'; 
+        }
 
         function saveAndPreview() {
+            const items = Array.from(document.querySelectorAll('.invoice-row')).map(r => ({
+                v: r.querySelector('.val-in').value || 0,
+                n: r.querySelector('.num-in').value || "-",
+                c: r.querySelector('.cust-in').value || "-"
+            }));
+
+            if(items.reduce((acc, curr) => acc + Number(curr.v), 0) === 0) {
+                alert("برجاء إدخال مبالغ الفواتير أولاً");
+                return;
+            }
+
             const data = {
                 id: editingId || Date.now(),
                 sn: currentSN,
@@ -279,17 +308,14 @@
                 store: document.getElementById('store-id').value || "--",
                 date: document.getElementById('date-display').innerText,
                 total: document.getElementById('total-price').innerText,
-                items: Array.from(document.querySelectorAll('.invoice-row')).map(r => ({
-                    v: r.querySelector('.val-in').value || 0,
-                    n: r.querySelector('.num-in').value || "-",
-                    c: r.querySelector('.cust-in').value || "-"
-                }))
+                items: items
             };
+
             let db = JSON.parse(localStorage.getItem('RZ_DB') || '[]');
             if(editingId) db = db.map(item => item.id === editingId ? data : item);
             else db.unshift(data);
-            localStorage.setItem('RZ_DB', JSON.stringify(db));
             
+            localStorage.setItem('RZ_DB', JSON.stringify(db));
             showPrintOverlay(data);
             resetApp();
         }
@@ -300,14 +326,14 @@
             const content = document.getElementById('print-content');
             
             let rows = '';
-            data.items.forEach(i => rows += `<tr><td>${i.v} ج.م</td><td>${i.n}</td><td>${i.c}</td></tr>`);
+            data.items.forEach(i => rows += `<tr><td style="padding:10px; border:1px solid #eee; text-align:center;">${i.v} ج.م</td><td style="padding:10px; border:1px solid #eee; text-align:center;">${i.n}</td><td style="padding:10px; border:1px solid #eee; text-align:center;">${i.c}</td></tr>`);
             const logoHtml = companyLogo ? `<img src="${companyLogo}" style="max-height:80px;">` : `<h2 style="margin:0; color:#000;">RZ ENTERPRISE</h2>`;
 
             content.innerHTML = `
-                <div id="capture-area" style="background:white; padding:20px; border:1px solid #eee; border-radius:10px;">
+                <div id="capture-area" style="background:white; padding:20px; border:1px solid #eee; border-radius:10px; direction:rtl;">
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">
                         <div>${logoHtml}</div>
-                        <div><h3 style="margin:0; color:#000;">إذن استلام فواتير</h3></div>
+                        <div style="text-align:left;"><h3 style="margin:0; color:#000;">إذن استلام فواتير</h3></div>
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:20px;">
                         <div style="background:#f9f9f9; padding:8px; border-radius:5px; border:1px solid #eee;"><small style="color:#888; display:block; font-size:10px;">السيريال</small><b style="font-size:12px;">${data.sn}</b></div>
@@ -325,7 +351,10 @@
                         <tbody>${rows}</tbody>
                     </table>
                     <div style="background:#000; color:#fff; padding:15px; display:flex; justify-content:space-between; margin-top:20px; border-radius:5px;">
-                        <span>الإجمالي:</span><b>${data.total}</b>
+                        <span>الإجمالي الكلي:</span><b>${data.total}</b>
+                    </div>
+                    <div style="margin-top:30px; text-align:center; font-size:10px; opacity:0.5; border-top:1px solid #eee; padding-top:10px;">
+                        طُبع بواسطة منظومة RZ Enterprise - زياد يحيى زكريا
                     </div>
                 </div>
             `;
@@ -342,7 +371,7 @@
                     margin: 0.3,
                     filename: `RZ-${currentOrderData.sn}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
+                    html2canvas: { scale: 2, useCORS: true },
                     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
                 };
                 html2pdf().from(element).set(opt).save();
@@ -355,13 +384,13 @@
             const l = document.getElementById('history-list');
             const d = f || JSON.parse(localStorage.getItem('RZ_DB') || '[]');
             l.innerHTML = d.map((item) => `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="card" style="display:flex; justify-content:space-between; align-items:center; animation:fadeIn 0.3s ease;">
                     <div><b>${item.sn}</b><br><small>${item.delegate} - ${item.date}</small></div>
                     <div style="display:flex; gap:8px;">
                         <button onclick="editOrderById(${item.id})" class="btn btn-outline" style="width:35px; padding:5px; color:#ff9f43; border-color:#ff9f4350;"><i class="fas fa-edit"></i></button>
                         <button onclick="reViewByDataId(${item.id})" class="btn btn-outline" style="width:35px; padding:5px"><i class="fas fa-eye"></i></button>
                     </div>
-                </div>`).join('') || '<p style="text-align:center; opacity:0.5">الأرشيف فارغ</p>';
+                </div>`).join('') || '<p style="text-align:center; opacity:0.5; margin-top:50px;">الأرشيف فارغ حالياً</p>';
         }
 
         function editOrderById(id) {
@@ -389,32 +418,72 @@
             if(item) showPrintOverlay(item);
         }
 
-        function filterHistory() { const q = document.getElementById('search-input').value.toLowerCase(); const db = JSON.parse(localStorage.getItem('RZ_DB') || '[]'); renderHistory(db.filter(i => i.sn.toLowerCase().includes(q) || i.delegate.toLowerCase().includes(q))); }
-        function exportFullBackup() {
-            const data = { db: localStorage.getItem('RZ_DB'), def: localStorage.getItem('RZ_DEFAULTS'), logo: localStorage.getItem('RZ_LOGO'), lock: localStorage.getItem('RZ_LOCK_ENABLED'), pass: localStorage.getItem('RZ_APP_PASS') };
-            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `RZ_FULL_BACKUP.json`; a.click();
+        function filterHistory() { 
+            const q = document.getElementById('search-input').value.toLowerCase(); 
+            const db = JSON.parse(localStorage.getItem('RZ_DB') || '[]'); 
+            renderHistory(db.filter(i => i.sn.toLowerCase().includes(q) || i.delegate.toLowerCase().includes(q))); 
         }
+
+        function exportFullBackup() {
+            const data = { 
+                db: localStorage.getItem('RZ_DB'), 
+                def: localStorage.getItem('RZ_DEFAULTS'), 
+                logo: localStorage.getItem('RZ_LOGO'), 
+                lock: localStorage.getItem('RZ_LOCK_ENABLED'), 
+                pass: localStorage.getItem('RZ_APP_PASS') 
+            };
+            const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+            const a = document.createElement('a'); 
+            a.href = URL.createObjectURL(blob); 
+            a.download = `RZ_BACKUP_${new Date().toISOString().slice(0,10)}.json`; 
+            a.click();
+        }
+
         function importFullBackup(e) {
             const reader = new FileReader();
             reader.onload = (ev) => {
-                const d = JSON.parse(ev.target.result);
-                if(d.db) localStorage.setItem('RZ_DB', d.db);
-                if(d.def) localStorage.setItem('RZ_DEFAULTS', d.def);
-                if(d.logo) localStorage.setItem('RZ_LOGO', d.logo);
-                if(d.lock) localStorage.setItem('RZ_LOCK_ENABLED', d.lock);
-                if(d.pass) localStorage.setItem('RZ_APP_PASS', d.pass);
-                alert("تمت الاستعادة!"); location.reload();
+                try {
+                    const d = JSON.parse(ev.target.result);
+                    if(d.db) localStorage.setItem('RZ_DB', d.db);
+                    if(d.def) localStorage.setItem('RZ_DEFAULTS', d.def);
+                    if(d.logo) localStorage.setItem('RZ_LOGO', d.logo);
+                    if(d.lock) localStorage.setItem('RZ_LOCK_ENABLED', d.lock);
+                    if(d.pass) localStorage.setItem('RZ_APP_PASS', d.pass);
+                    alert("تم استيراد كافة البيانات بنجاح!"); 
+                    location.reload();
+                } catch(err) {
+                    alert("فشل الاستيراد: ملف غير صالح");
+                }
             };
             reader.readAsText(e.target.files[0]);
         }
-        function saveDefaults() { localStorage.setItem('RZ_DEFAULTS', JSON.stringify({ d: document.getElementById('def-delegate').value, c: document.getElementById('def-company').value, s: document.getElementById('def-store').value })); }
+
+        function saveDefaults() { 
+            localStorage.setItem('RZ_DEFAULTS', JSON.stringify({ 
+                d: document.getElementById('def-delegate').value, 
+                c: document.getElementById('def-company').value, 
+                s: document.getElementById('def-store').value 
+            })); 
+        }
+
         function loadDefaults() { 
             const d = JSON.parse(localStorage.getItem('RZ_DEFAULTS') || '{}');
-            document.getElementById('def-delegate').value = d.d || ''; document.getElementById('def-company').value = d.c || ''; document.getElementById('def-store').value = d.s || '';
-            if(!editingId) { document.getElementById('delegate').value = d.d || ''; document.getElementById('company').value = d.c || ''; document.getElementById('store-id').value = d.s || ''; }
+            document.getElementById('def-delegate').value = d.d || ''; 
+            document.getElementById('def-company').value = d.c || ''; 
+            document.getElementById('def-store').value = d.s || '';
+            if(!editingId) { 
+                document.getElementById('delegate').value = d.d || ''; 
+                document.getElementById('company').value = d.c || ''; 
+                document.getElementById('store-id').value = d.s || ''; 
+            }
         }
-        function clearAllHistory() { if(confirm("حذف كل الأرشيف؟")) { localStorage.setItem('RZ_DB', '[]'); renderHistory(); } }
+
+        function clearAllHistory() { 
+            if(confirm("هل أنت متأكد من حذف كافة السجلات؟ لا يمكن التراجع عن هذه الخطوة.")) { 
+                localStorage.setItem('RZ_DB', '[]'); 
+                renderHistory(); 
+            } 
+        }
     </script>
 </body>
 </html>

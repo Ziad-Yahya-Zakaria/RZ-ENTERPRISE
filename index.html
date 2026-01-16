@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root { 
             --bg: #fdfdfd; --card: #ffffff; --text: #2d3436; --border: #dfe6e9; --primary: #636e72; --accent: #2d3436; --nav-bg: #ffffff; --shadow: rgba(0,0,0,0.05);
@@ -278,12 +280,13 @@
             win.document.write(`
                 <html dir="rtl"><head><title>إذن استلام - ${data.sn}</title>
                 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
                 <style>
                     body { font-family: 'Tajawal', sans-serif; padding: 20px; background: #fff; color: #333; }
                     .no-print { display: flex; gap: 10px; margin-bottom: 15px; }
                     .btn-p { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
                     .btn-blue { background: #2d3436; color: #fff; }
-                    .invoice { border: 1px solid #eee; padding: 20px; border-radius: 10px; max-width: 800px; margin: auto; }
+                    .invoice { border: 1px solid #eee; padding: 20px; border-radius: 10px; max-width: 800px; margin: auto; background: white; }
                     .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
                     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
                     .box { background: #f9f9f9; padding: 8px 12px; border-radius: 6px; border: 1px solid #f0f0f0; }
@@ -296,8 +299,10 @@
                     @media print { .no-print { display: none; } .invoice { border:none; padding:0; } }
                 </style></head>
                 <body>
-                    <div class="no-print"><button class="btn-p btn-blue" onclick="window.print()">طباعة</button></div>
-                    <div class="invoice">
+                    <div class="no-print">
+                        <button class="btn-p btn-blue" onclick="handleSmartPrint()">طباعة / حفظ PDF</button>
+                    </div>
+                    <div class="invoice" id="print-area">
                         <div class="header"><div>${logoHtml}</div><div><h3 style="margin:0">إذن استلام فواتير</h3></div></div>
                         <div class="grid">
                             <div class="box"><label>السيريال</label><b>${data.sn}</b></div>
@@ -309,6 +314,28 @@
                         <table><thead><tr><th>المبلغ</th><th>رقم الفاتورة</th><th>العميل</th></tr></thead><tbody>${rows}</tbody></table>
                         <div class="footer-total"><span>الإجمالي:</span><span>${data.total}</span></div>
                     </div>
+
+                    <script>
+                        function handleSmartPrint() {
+                            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                            
+                            if (isMobile) {
+                                // منطق الموبايل: تحويل لـ PDF
+                                const element = document.getElementById('print-area');
+                                const opt = {
+                                    margin: 0.5,
+                                    filename: 'RZ-Invoice-${data.sn}.pdf',
+                                    image: { type: 'jpeg', quality: 0.98 },
+                                    html2canvas: { scale: 2 },
+                                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                                };
+                                html2pdf().from(element).set(opt).save();
+                            } else {
+                                // منطق الكمبيوتر: فتح نافذة الطباعة العادية
+                                window.print();
+                            }
+                        }
+                    <\/script>
                 </body></html>
             `);
             win.document.close();

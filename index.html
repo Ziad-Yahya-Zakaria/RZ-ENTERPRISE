@@ -87,11 +87,43 @@
             box-sizing: border-box;
         }
 
+        /* ============================================================
+           إصلاح الطباعة اللانهائية والمعاينة (للويندوز والاندرويد)
+        ============================================================ */
         @media print {
+            body { 
+                overflow: visible !important; 
+                height: auto !important; 
+            }
             body * { visibility: hidden; }
-            #print-overlay, #print-overlay * { visibility: visible; }
-            #print-overlay { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; }
+            #print-overlay, #print-overlay * { 
+                visibility: visible; 
+            }
+            #print-overlay { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                display: block !important; 
+                padding: 0; 
+                overflow: visible !important;
+                height: auto !important;
+            }
+            #capture-area {
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
             .no-print { display: none !important; }
+            
+            /* لضمان عدم قص الجداول الطويلة */
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
         }
     </style>
 </head>
@@ -232,7 +264,6 @@
         let editingId = null;
         let currentOrderData = null;
 
-        // الدوال الأساسية (لم يتم إنقاص أي منها)
         function handleLogoUpload(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -361,7 +392,6 @@
 
         function closePrintOverlay() { document.getElementById('print-overlay').style.display = 'none'; }
 
-        // --- الدالة المحدثة لحل مشكلة الموبايل والكمبيوتر معاً ---
         function executeSmartPrint() {
             const btn = document.getElementById('smart-print-btn');
             const originalText = btn.innerHTML;
@@ -369,7 +399,6 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // وضع الموبايل: تحويل لـ PDF وحفظه مباشرة
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
                 btn.style.opacity = '0.7';
                 btn.disabled = true;
@@ -398,10 +427,9 @@
                     btn.innerHTML = originalText;
                     btn.style.opacity = '1';
                     btn.disabled = false;
-                    window.print(); // محاولة أخيرة بالطباعة التقليدية
+                    window.print();
                 });
             } else {
-                // وضع الكمبيوتر: فتح نافذة الطباعة العادية
                 window.print();
             }
         }

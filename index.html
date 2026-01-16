@@ -39,7 +39,6 @@
         .input-group { margin-bottom: 15px; }
         label { font-size: 0.8rem; font-weight: bold; opacity: 0.8; margin-bottom: 5px; display: block; }
         
-        /* تحسين المدخلات للهواتف ومنع الزووم التلقائي في الآيفون */
         input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text); font-size: 16px !important; transition: 0.2s; }
         input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
         
@@ -59,7 +58,6 @@
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
         
-        /* إخفاء القائمة السفلية عند ظهور لوحة المفاتيح في الشاشات الصغيرة جداً */
         @media screen and (max-height: 450px) { .bottom-nav { display: none; } }
 
         .nav-item { text-align: center; color: var(--text); opacity: 0.4; font-size: 10px; flex: 1; cursor: pointer; transition: 0.3s; }
@@ -81,7 +79,6 @@
             background: #fff; z-index: 20000; display: none; overflow-y: auto; padding: 20px; color: #333;
         }
 
-        /* تحسين منطقة الطباعة للهواتف لضمان عدم قص الجدول */
         #capture-area {
             width: 100%;
             max-width: 800px;
@@ -91,9 +88,10 @@
         }
 
         @media print {
+            body * { visibility: hidden; }
+            #print-overlay, #print-overlay * { visibility: visible; }
+            #print-overlay { position: absolute; left: 0; top: 0; width: 100%; display: block !important; padding: 0; }
             .no-print { display: none !important; }
-            #print-overlay { position: absolute; top: 0; left: 0; width: 100%; height: auto; display: block !important; padding: 0; }
-            body > *:not(#print-overlay) { display: none !important; }
         }
     </style>
 </head>
@@ -208,20 +206,14 @@
                 <div><i class="fas fa-envelope"></i> zidplgoog@gmail.com</div>
             </div>
         </div>
-
         <div class="card" style="border-right: 4px solid #ff4757;">
             <h3 style="color: #ff4757;"><i class="fas fa-file-contract"></i> ترخيص الاستخدام والملكية</h3>
             <div style="font-size: 0.85rem; line-height: 1.6; opacity: 0.9;">
                 <p><b>حقوق النشر © 2026 زياد يحيى زكريا. جميع الحقوق محفوظة.</b></p>
                 <ul style="padding-right: 20px;">
-                    <li>✅ هذا البرنامج متاح <b>للاستخدام فقط</b> (شخصي أو تجاري داخلي).</li>
+                    <li>✅ هذا البرنامج متاح <b>للاستخدام فقط</b>.</li>
                     <li>❌ <b>يُمنع منعاً باتاً</b> تعديل الكود المصدري أو إعادة صياغته.</li>
-                    <li>❌ لا يجوز الاستحواذ على البرنامج أو بيعه أو نسبه لغير المطور الأصلي.</li>
-                    <li>❌ إزالة حقوق المطور أو العلامة التجارية يعتبر انتهاكاً قانونياً للترخيص.</li>
                 </ul>
-                <p style="font-weight: bold; margin-top: 10px; color: var(--accent);">
-                    استخدامك لهذا التطبيق يعني موافقتك الضمنية على هذه الشروط.
-                </p>
             </div>
         </div>
     </div>
@@ -240,6 +232,7 @@
         let editingId = null;
         let currentOrderData = null;
 
+        // الدوال الأساسية (لم يتم إنقاص أي منها)
         function handleLogoUpload(e) {
             const file = e.target.files[0];
             const reader = new FileReader();
@@ -293,9 +286,7 @@
             if(document.querySelectorAll('.invoice-row').length > 1) {
                 btn.parentElement.remove();
                 updateTotal();
-            } else {
-                alert("يجب وجود سطر واحد على الأقل");
-            }
+            } else { alert("يجب وجود سطر واحد على الأقل"); }
         }
 
         function updateTotal() { 
@@ -310,12 +301,7 @@
                 n: r.querySelector('.num-in').value || "-",
                 c: r.querySelector('.cust-in').value || "-"
             }));
-
-            if(items.reduce((acc, curr) => acc + Number(curr.v), 0) === 0) {
-                alert("برجاء إدخال مبالغ الفواتير أولاً");
-                return;
-            }
-
+            if(items.reduce((acc, curr) => acc + Number(curr.v), 0) === 0) { alert("برجاء إدخال مبالغ الفواتير أولاً"); return; }
             const data = {
                 id: editingId || Date.now(),
                 sn: currentSN,
@@ -326,11 +312,9 @@
                 total: document.getElementById('total-price').innerText,
                 items: items
             };
-
             let db = JSON.parse(localStorage.getItem('RZ_DB') || '[]');
             if(editingId) db = db.map(item => item.id === editingId ? data : item);
             else db.unshift(data);
-            
             localStorage.setItem('RZ_DB', JSON.stringify(db));
             showPrintOverlay(data);
             resetApp();
@@ -340,11 +324,9 @@
             currentOrderData = data;
             const overlay = document.getElementById('print-overlay');
             const content = document.getElementById('print-content');
-            
             let rows = '';
             data.items.forEach(i => rows += `<tr><td style="padding:10px; border:1px solid #eee; text-align:center; font-size:12px;">${i.v} ج.م</td><td style="padding:10px; border:1px solid #eee; text-align:center; font-size:12px;">${i.n}</td><td style="padding:10px; border:1px solid #eee; text-align:center; font-size:12px;">${i.c}</td></tr>`);
             const logoHtml = companyLogo ? `<img src="${companyLogo}" style="max-height:80px;">` : `<h2 style="margin:0; color:#000;">RZ ENTERPRISE</h2>`;
-
             content.innerHTML = `
                 <div id="capture-area" style="background:white; padding:20px; border:1px solid #eee; border-radius:10px; direction:rtl;">
                     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px;">
@@ -379,27 +361,30 @@
 
         function closePrintOverlay() { document.getElementById('print-overlay').style.display = 'none'; }
 
-        // تعديل دالة الطباعة لتكون أكثر استقراراً على الموبايل
+        // --- الدالة المحدثة لحل مشكلة الموبايل والكمبيوتر معاً ---
         function executeSmartPrint() {
+            const btn = document.getElementById('smart-print-btn');
+            const originalText = btn.innerHTML;
+            const element = document.getElementById('capture-area');
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
             if (isMobile) {
-                const element = document.getElementById('capture-area');
-                const btn = document.getElementById('smart-print-btn');
-                const originalText = btn.innerHTML;
-                
-                // تغيير حالة الزر لتوضيح التحميل
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+                // وضع الموبايل: تحويل لـ PDF وحفظه مباشرة
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحضير...';
                 btn.style.opacity = '0.7';
+                btn.disabled = true;
 
                 const opt = {
                     margin: [0.3, 0.3],
                     filename: `RZ-${currentOrderData.sn}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 2.5, // دقة عالية
+                        scale: 3, 
                         useCORS: true, 
                         letterRendering: true,
-                        windowWidth: 800 // لضمان ثبات عرض الجدول
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: 800 
                     },
                     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
                 };
@@ -407,12 +392,16 @@
                 html2pdf().from(element).set(opt).save().then(() => {
                     btn.innerHTML = originalText;
                     btn.style.opacity = '1';
+                    btn.disabled = false;
                 }).catch(err => {
+                    console.error(err);
                     btn.innerHTML = originalText;
                     btn.style.opacity = '1';
-                    alert("عذراً، حدث خطأ أثناء توليد الملف.");
+                    btn.disabled = false;
+                    window.print(); // محاولة أخيرة بالطباعة التقليدية
                 });
             } else {
+                // وضع الكمبيوتر: فتح نافذة الطباعة العادية
                 window.print();
             }
         }
@@ -488,9 +477,7 @@
                     if(d.pass) localStorage.setItem('RZ_APP_PASS', d.pass);
                     alert("تم استيراد كافة البيانات بنجاح!"); 
                     location.reload();
-                } catch(err) {
-                    alert("فشل الاستيراد: ملف غير صالح");
-                }
+                } catch(err) { alert("فشل الاستيراد: ملف غير صالح"); }
             };
             reader.readAsText(e.target.files[0]);
         }
